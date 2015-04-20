@@ -47,7 +47,6 @@ end
 function filterbank = get_filterbank(frequencies)
     m_vector = mel2f(frequencies);
     binwidth = (max(m_vector)-min(m_vector))/27;
-    maxMel = max(m_vector);
     minMel = min(m_vector);
     
     filterbank = zeros(26, numel(frequencies));
