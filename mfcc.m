@@ -1,36 +1,40 @@
-function features = mfcc(x, lower, upper, fs)
-    % Get a 25ms frame length
-    framelength = floor(.025*fs);
+function features = mfcc(x, fs)
+    framelength = floor(.025*fs); % Get a 25ms frame length
     
-    % Zero-pad signal with ones if size does not divide evenly
-    sizediff = mod(numel(x),framelength);
-    if sizediff ~= 0
-        for n = 1:sizediff
-            x(end+1) = 0;
+    % Zero-pad signal with zeros if size does not divide evenly
+    while mod(numel(x),framelength) ~= 0
+        x(end+1) = 0;
+    end
+    % Number of iterations
+    iterations = numel(x)/framelength;
+    features = zeros(1,26);
+    figure;
+    hold on;
+    for i = 1:(iterations-1)
+        start = i*framelength;
+        stop = i*framelength+framelength;
+        [P,f] = periodogram(x(start:stop), [], 512, fs);
+        filterbank = get_filterbank(f);
+        if sum(sum(isnan(filterbank))) ~= 0
+            continue
         end
+        energies = zeros(1,26);
+        filterenergy = filterbank*P;
+        for k = 1:26 % Sum the energy in each vector
+            energies(k) = sum(filterenergy(k));
+        end
+        logfilterenergy = log(energies);
+        energydct = dct(logfilterenergy,numel(logfilterenergy));
+        if sum(sum(isnan(energydct))) ~= 0
+            disp('DCT has NaN elements')
+            disp(i)
+            continue
+        end
+        features = features + energydct;
     end
-    
-    % Take the 512-point DFT
-    S = fft(x, 512);
-    % Keep only the first 257 elements
-    S = S(1:257);
-    P = zeros(1,257);
-    for n = 1:257
-        P(n) = S(n)*S(n)./512;
-    end
-    
-    % Get filterbank of frequencies 300-8000 Hz
-    filterbank = get_filterbank(lower, upper, S, fs);
-    coefficients = zeros(1,26);
-    
-    for i = 1:26
-        mult = filterbank(i).*P;
-        coefficients(i) = sum(mult);
-    end
-    
-    coefficients = log10(coefficients);
-    features = dct(coefficients);
-    features = features(1:13);
+    features = features / (iterations-1);
+    features = features(2:13);
+    plot(features)
 end
 
 % Mel transform
@@ -43,35 +47,17 @@ function f = mel2f(m)
     f=700*(exp(m/1125)-1);
 end
 
-% Get filter bank
-function filterbank = get_filterbank(lower, upper, fft, fs)
-    % Upper and lower bounds in the Mel domain
-    lower_mel = f2mel(lower);
-    upper_mel = f2mel(upper);
+function filterbank = get_filterbank(frequencies)
+    m_vector = mel2f(frequencies);
+    binwidth = (max(m_vector)-min(m_vector))/27;
+    maxMel = max(m_vector);
+    minMel = min(m_vector);
     
-    % Want to generate 26 additional points between upper and lower bounds
-    m_vector = linspace(lower_mel, upper_mel, 28);
-    h_vector = zeros(1,numel(m_vector));
+    filterbank = zeros(26, numel(frequencies));
     
-    for k = 1:28
-        h_vector(k) = mel2f(m_vector(k));
+    for k = 1:26
+        which_bin = find(m_vector>=((k-1)*binwidth+minMel) & m_vector<=(k+1)*binwidth+minMel);
+        filterbank(k,which_bin) = triang(numel(which_bin));
     end
-    f_bins = zeros(1,28);
-    
-    % Sort frequencies into bins
-    for k = 1:28
-        f_bins(k) = floor((numel(fft)+1)*h_vector(k)/fs);
-    end
-    
-    filterbank = zeros(28,numel(fft));
-    
-    % Build the filter bank
-    for k = 2:27
-        windowlen = f_bins(k+1) - f_bins(k-1);
-        window = triang(windowlen);
-        filterbank(k,:) = window;
-    end
-    % Use a sparse matrix to reduce memory usage
     filterbank = sparse(filterbank);
-    plot(filterbank)
 end    
