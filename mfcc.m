@@ -8,8 +8,6 @@ function features = mfcc(x, fs)
     % Number of iterations
     iterations = numel(x)/framelength;
     features = zeros(1,26);
-    figure;
-    hold on;
     for i = 1:(iterations-1)
         start = i*framelength;
         stop = i*framelength+framelength;
@@ -34,7 +32,6 @@ function features = mfcc(x, fs)
     end
     features = features / (iterations-1);
     features = features(2:13);
-    plot(features)
 end
 
 % Mel transform
