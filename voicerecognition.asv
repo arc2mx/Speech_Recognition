@@ -1,4 +1,4 @@
-function features = voicerecognition(x, fs)
+function features = MFCC(x, fs)
     % Get a 25ms frame length
     framelength = floor(.025*fs);
     
@@ -25,17 +25,12 @@ function features = voicerecognition(x, fs)
     
     for i = 1:26
         mult = filterbank(i).*P;
-        coefficients(i) = sum(mult);
-    end
-    
-    coefficients = log10(coefficients);
-    features = dct(coefficients);
-    features = features(1:13);
+        
 end
 
 % Mel transform
 function m = f2mel(freq)
-    m = 1125*log(1+freq/700);
+    m = 1125*ln(1+freq/700);
 end
 
 % Inverse Mel transform
@@ -53,19 +48,19 @@ function filterbank = get_filterbank(lower, upper, fft, fs)
     m_vector = linspace(lower_mel, upper_mel, 28);
     h_vector = zeros(1,numel(m_vector));
     
-    for k = 1:28
+    for k = 1:numel(m_vector)
         h_vector(k) = mel2f(m_vector(k));
     end
     
-    f_bins = zeros(1,28);
+    f_bins = zeros(1,numel(h_vector));
     
     % Sort frequencies into bins
-    for k = 1:28
+    for k = 1:numel(h_vector)
         f_bins(k) = floor((fft+1)*h_vector(k)/fs);
     end
     filterbank = zeros(N,N);
     
-    for k = 1:28
+    for k = 1:numel(h_vector)
         which_bin = f_bins(k);
         filterbank(k, which_bin) = triang(numel(which_bin));
     end
