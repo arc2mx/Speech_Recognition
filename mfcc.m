@@ -1,4 +1,4 @@
-function features = voicerecognition(x, fs)
+function features = mfcc(x, lower, upper, fs)
     % Get a 25ms frame length
     framelength = floor(.025*fs);
     
@@ -20,7 +20,7 @@ function features = voicerecognition(x, fs)
     end
     
     % Get filterbank of frequencies 300-8000 Hz
-    filterbank = get_filterbank(300, 8000, S, fs);
+    filterbank = get_filterbank(lower, upper, S, fs);
     coefficients = zeros(1,26);
     
     for i = 1:26
@@ -56,19 +56,22 @@ function filterbank = get_filterbank(lower, upper, fft, fs)
     for k = 1:28
         h_vector(k) = mel2f(m_vector(k));
     end
-    
     f_bins = zeros(1,28);
     
     % Sort frequencies into bins
     for k = 1:28
-        f_bins(k) = floor((fft+1)*h_vector(k)/fs);
+        f_bins(k) = floor((numel(fft)+1)*h_vector(k)/fs);
     end
-    filterbank = zeros(N,N);
     
-    for k = 1:28
-        which_bin = f_bins(k);
-        filterbank(k, which_bin) = triang(numel(which_bin));
+    filterbank = zeros(28,numel(fft));
+    
+    % Build the filter bank
+    for k = 2:27
+        windowlen = f_bins(k+1) - f_bins(k-1);
+        window = triang(windowlen);
+        filterbank(k,:) = window;
     end
     % Use a sparse matrix to reduce memory usage
     filterbank = sparse(filterbank);
+    plot(filterbank)
 end    
