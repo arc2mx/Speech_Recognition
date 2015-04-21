@@ -23,14 +23,13 @@ function features = mfcc(x, fs)
         end
         logfilterenergy = log(energies);
         energydct = dct(logfilterenergy,numel(logfilterenergy));
-        if sum(sum(isnan(energydct))) ~= 0
-            disp('DCT has NaN elements')
-            disp(i)
+        if sum(sum(isnan(energydct))) ~= 0 % If the DCT has NaN elements, skip
             continue
         end
         features = features + energydct;
     end
     features = features / (iterations-1);
+    %features = features/max(features); % Normalize feature vector
     features = features(2:13);
 end
 
@@ -45,14 +44,13 @@ function f = mel2f(m)
 end
 
 function filterbank = get_filterbank(frequencies)
-    m_vector = mel2f(frequencies);
+    m_vector = f2mel(frequencies);
     binwidth = (max(m_vector)-min(m_vector))/27;
     minMel = min(m_vector);
     
     filterbank = zeros(26, numel(frequencies));
-    
     for k = 1:26
-        which_bin = find(m_vector>=((k-1)*binwidth+minMel) & m_vector<=(k+1)*binwidth+minMel);
+        which_bin = find(m_vector>=((k-1)*binwidth+minMel) & m_vector<=((k+1)*binwidth+minMel));
         filterbank(k,which_bin) = triang(numel(which_bin));
     end
     filterbank = sparse(filterbank);
