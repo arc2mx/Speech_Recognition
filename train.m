@@ -71,61 +71,61 @@ function feature_bank = train()
     zero_ted = downsample(zero_ted, factor);
     zero_ted = zero_ted/max(zero_ted);
     
-    one_andrew = audioread('one_andrew.wav');
+    one_andrew = audioread('one-andrew.wav');
     one_andrew = one_andrew(:,1);
     one_andrew = filter(b,a,one_andrew);
     one_andrew = downsample(one_andrew, factor);
     one_andrew = one_andrew/max(one_andrew);
     
-    two_andrew = audioread('two_andrew.wav');
+    two_andrew = audioread('two-andrew.wav');
     two_andrew = two_andrew(:,1);
     two_andrew = filter(b,a,two_andrew);
     two_andrew = downsample(two_andrew, factor);
     two_andrew = two_andrew/max(two_andrew);
     
-    three_andrew = audioread('three_andrew.wav');
+    three_andrew = audioread('three-andrew.wav');
     three_andrew = three_andrew(:,1);
     three_andrew = filter(b,a,three_andrew);
     three_andrew = downsample(three_andrew, factor);
     three_andrew = three_andrew/max(three_andrew);
     
-    four_andrew = audioread('four_andrew.wav');
+    four_andrew = audioread('four-andrew.wav');
     four_andrew = four_andrew(:,1);
     four_andrew = filter(b,a,four_andrew);
     four_andrew = downsample(four_andrew, factor);
     four_andrew = four_andrew/max(four_andrew);
     
-    five_andrew = audioread('five_andrew.wav');
+    five_andrew = audioread('five-andrew.wav');
     five_andrew = five_andrew(:,1);
     five_andrew = filter(b,a,five_andrew);
     five_andrew = downsample(five_andrew, factor);
     five_andrew = five_andrew/max(five_andrew);
     
-    six_andrew = audioread('six_andrew.wav');
+    six_andrew = audioread('six-andrew.wav');
     six_andrew = six_andrew(:,1);
     six_andrew = filter(b,a,six_andrew);
     six_andrew = downsample(six_andrew, factor);
     six_andrew = six_andrew/max(six_andrew);
     
-    seven_andrew = audioread('seven_andrew.wav');
+    seven_andrew = audioread('seven-andrew.wav');
     seven_andrew = seven_andrew(:,1);
     seven_andrew = filter(b,a,seven_andrew);
     seven_andrew = downsample(seven_andrew, factor);
     seven_andrew = seven_andrew/max(seven_andrew);
     
-    eight_andrew = audioread('eight_andrew.wav');
+    eight_andrew = audioread('eight-andrew.wav');
     eight_andrew = eight_andrew(:,1);
     eight_andrew = filter(b,a,eight_andrew);
     eight_andrew = downsample(eight_andrew, factor);
     eight_andrew = eight_andrew/max(eight_andrew);
     
-    nine_andrew = audioread('nine_andrew.wav');
+    nine_andrew = audioread('nine-andrew.wav');
     nine_andrew = nine_andrew(:,1);
     nine_andrew = filter(b,a,nine_andrew);
     nine_andrew = downsample(nine_andrew, factor);
     nine_andrew = nine_andrew/max(nine_andrew);
     
-    zero_andrew = audioread('zero_andrew.wav');
+    zero_andrew = audioread('zero-andrew.wav');
     zero_andrew = zero_andrew(:,1);
     zero_andrew = filter(b,a,zero_andrew);
     zero_andrew = downsample(zero_andrew, factor);
