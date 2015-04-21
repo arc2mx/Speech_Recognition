@@ -1,6 +1,6 @@
 function features = mfcc(x, fs)
     framelength = floor(.025*fs); % Get a 25ms frame length
-    
+    stepsize = floor(.010*fs);
     % Zero-pad signal with zeros if size does not divide evenly
     while mod(numel(x),framelength) ~= 0
         x(end+1) = 0;
@@ -8,9 +8,9 @@ function features = mfcc(x, fs)
     % Number of iterations
     iterations = numel(x)/framelength;
     features = zeros(1,26);
-    for i = 1:(iterations-1)
-        start = i*framelength;
-        stop = i*framelength+framelength;
+    for i = 1:stepsize:(numel(x)-framelength)
+        start = i;
+        stop = i+framelength;
         [P,f] = periodogram(x(start:stop), [], 512, fs);
         filterbank = get_filterbank(f);
         if sum(sum(isnan(filterbank))) ~= 0
